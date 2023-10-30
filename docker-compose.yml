@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  sane:
+    build: .
+    privileged: true
+    restart: always
+    volumes:
+      - /dev/bus/usb:/dev/bus/usb
+      - ./scans:/scans:rw
+    environment:
+      SCANBD_DEBUG_LEVEL: 2
+      SANE_BACKEND: fujitsu
+

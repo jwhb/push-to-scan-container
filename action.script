@@ -1,0 +1,37 @@
+#!/bin/sh -e
+
+scan_dir=/scans
+datetime=$(date +%F_%H%M%S)
+filename="scan-$datetime"
+
+RES=300
+MODE=Color
+ROTATE=true
+
+mkdir -p "$scan_dir"
+
+case "$SCANBD_ACTION" in
+ scan)
+  tmpdir=$(mktemp)
+  cd "${tmpdir}" || exit 1
+  logger -t "scanbd: $0" "$SCANBD_ACTION - scanning and converting to ps"
+  scanimage -d "$SCANBD_DEVICE" --mode $MODE --resolution $RES \
+    --format=pdf \
+	--source "ADF Duplex" \
+	--page-width=210 --page-height=297 \
+	--batch="${filename}.pdf"
+
+  # rotate PDF (useful with Duplex scan)
+  if $ROTATE; then
+   qpdf --rotate=+180 "${filename}.pdf" "r${filename}.pdf"
+   mv "r${filename}.pdf" "${filename}.pdf"
+  fi
+
+  mv "${filename}.pdf" "${scan_dir}"
+  rm -rf "${tmpdir}"
+  ;;
+*)
+  logger -t "scanbd: $0" "Unhandled action request."
+  ;;
+esac
+
