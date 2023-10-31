@@ -5,6 +5,8 @@ on:
       - '**'
     branches:
       - '**'
+      - '!main'
+      - '!master'
   schedule:
     - cron: '10 9 1 * *'  # monthly, first d.o.m. 09:10
 jobs:
@@ -19,4 +21,5 @@ jobs:
         uses: infinite-automations/full-build-push-action@main
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
+          checkout-deploy-key: "${{ secrets.COMMIT_KEY }}"
 

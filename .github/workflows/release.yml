@@ -1,0 +1,23 @@
+name: release
+on:
+  push:
+    branches:
+      - master
+      - main
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    container: smartive/semantic-release-image:latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: set git repo as safe directory
+        run: |
+          git config --global --add safe.directory $PWD
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        env:
+          GITHUB_TOKEN: ${{ secrets.SR_GH_TOKEN }}
+
