@@ -1,0 +1,22 @@
+name: container build
+on:
+  push:
+    tags:
+      - '**'
+    branches:
+      - '**'
+  schedule:
+    - cron: '10 9 1 * *'  # monthly, first d.o.m. 09:10
+jobs:
+  container-build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: container-build
+        uses: infinite-automations/full-build-push-action@main
+        with:
+          token: "${{ secrets.GITHUB_TOKEN }}"
+
