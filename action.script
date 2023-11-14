@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 scan_dir=/scans
 datetime=$(date +%F_%H%M%S)
@@ -12,7 +12,7 @@ mkdir -p "$scan_dir"
 
 case "$SCANBD_ACTION" in
  scan)
-  tmpdir=$(mktemp)
+  tmpdir=$(mktemp -d)
   cd "${tmpdir}" || exit 1
   logger -t "scanbd: $0" "$SCANBD_ACTION - scanning and converting to ps"
   scanimage -d "$SCANBD_DEVICE" --mode $MODE --resolution $RES \
@@ -23,8 +23,10 @@ case "$SCANBD_ACTION" in
 
   # rotate PDF (useful with Duplex scan)
   if $ROTATE; then
-   qpdf --rotate=+180 "${filename}.pdf" "r${filename}.pdf"
-   mv "r${filename}.pdf" "${filename}.pdf"
+    set +e
+    qpdf --rotate=+180 "${filename}.pdf" "r${filename}.pdf"
+    mv "r${filename}.pdf" "${filename}.pdf"
+    set -e
   fi
 
   mv "${filename}.pdf" "${scan_dir}"
